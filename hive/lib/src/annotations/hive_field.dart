@@ -22,5 +22,8 @@ class HiveField {
   /// ```
   final dynamic defaultValue;
 
-  const HiveField(this.index, {this.defaultValue});
+  /// Whether use this field as the default key of this type
+  final bool isKey;
+
+  const HiveField(this.index, {this.defaultValue, this.isKey = false});
 }

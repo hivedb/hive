@@ -8,6 +8,11 @@ class IgnoredTypeAdapter<T> implements TypeAdapter<T?> {
   final int typeId;
 
   @override
+  dynamic defaultKey(obj) {
+      return null;
+  }
+
+  @override
   T? read(BinaryReader reader) => null;
 
   @override

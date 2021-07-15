@@ -7,8 +7,9 @@ class AdapterField {
   final String name;
   final DartType type;
   final DartObject? defaultValue;
+  final bool isKey;
 
-  AdapterField(this.index, this.name, this.type, this.defaultValue);
+  AdapterField(this.index, this.name, this.type, this.defaultValue, this.isKey);
 }
 
 abstract class Builder {

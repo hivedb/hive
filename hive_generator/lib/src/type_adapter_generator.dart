@@ -40,10 +40,16 @@ class TypeAdapterGenerator extends GeneratorForAnnotation<HiveType> {
         ? EnumBuilder(cls, getters)
         : ClassBuilder(cls, getters, setters);
 
+    var defaultKey = getDefaultKey(getters);
+
     return '''
     class $adapterName extends TypeAdapter<${cls.name}> {
       @override
       final int typeId = $typeId;
+
+      @override
+      dynamic defaultKey(${cls.name} obj) =>
+          ${defaultKey};
 
       @override
       ${cls.name} read(BinaryReader reader) {
@@ -111,6 +117,7 @@ class TypeAdapterGenerator extends GeneratorForAnnotation<HiveType> {
             field.name,
             field.type,
             getterAnn.defaultValue,
+            getterAnn.isKey,
           ));
         }
       }
@@ -126,6 +133,7 @@ class TypeAdapterGenerator extends GeneratorForAnnotation<HiveType> {
             field.name,
             field.type,
             setterAnn.defaultValue,
+            false,
           ));
         }
       }
@@ -149,6 +157,22 @@ class TypeAdapterGenerator extends GeneratorForAnnotation<HiveType> {
         }
       }
     }
+  }
+
+  String getDefaultKey(List<AdapterField> fields) {
+    String defaultKey = "null";
+    int keysCount = 0;
+    for (var field in fields) {
+      if (field.isKey) {
+        keysCount++;
+        defaultKey = "obj." + field.name;
+      }
+    }
+    check(
+      keysCount <= 1,
+      'At most one field can have isKey=true',
+    );
+    return defaultKey;
   }
 
   String getAdapterName(String typeName, ConstantReader annotation) {

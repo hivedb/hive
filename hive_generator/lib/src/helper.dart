@@ -6,10 +6,11 @@ import 'package:source_gen/source_gen.dart';
 final _hiveFieldChecker = const TypeChecker.fromRuntime(HiveField);
 
 class HiveFieldInfo {
-  HiveFieldInfo(this.index, this.defaultValue);
+  HiveFieldInfo(this.index, this.defaultValue, this.isKey);
 
   final int index;
   final DartObject? defaultValue;
+  final bool isKey;
 }
 
 HiveFieldInfo? getHiveFieldAnn(Element element) {
@@ -19,6 +20,7 @@ HiveFieldInfo? getHiveFieldAnn(Element element) {
   return HiveFieldInfo(
     obj.getField('index')!.toIntValue()!,
     obj.getField('defaultValue'),
+    obj.getField('isKey')!.toBoolValue()!,
   );
 }
 

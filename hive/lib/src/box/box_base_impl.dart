@@ -108,7 +108,7 @@ abstract class BoxBaseImpl<E> implements BoxBase<E> {
 
   @override
   Future<int> add(E value) async {
-    var key = keystore.autoIncrement();
+    var key = _getDefaultKey(value);
     await put(key, value);
     return key;
   }
@@ -117,7 +117,7 @@ abstract class BoxBaseImpl<E> implements BoxBase<E> {
   Future<Iterable<int>> addAll(Iterable<E> values) async {
     var entries = <int, E>{};
     for (var value in values) {
-      entries[keystore.autoIncrement()] = value;
+      entries[_getDefaultKey(value)] = value;
     }
     await putAll(entries);
     return entries.keys;
@@ -182,6 +182,20 @@ abstract class BoxBaseImpl<E> implements BoxBase<E> {
     }
 
     await backend.deleteFromDisk();
+  }
+
+  dynamic _getDefaultKey(E value) {
+    var resolved = hive.findAdapterForValue(value);
+    if (resolved == null) {
+      return keystore.autoIncrement();
+    }
+    var adapter = resolved.adapter;
+    var key = adapter.defaultKey(value);
+    if (key == null) {
+      return keystore.autoIncrement();
+    } else {
+      return key;
+    }
   }
 }
 
